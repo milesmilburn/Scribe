@@ -1,0 +1,6 @@
+@Scribe.Server_HostAddress = http://localhost:5255
+
+GET {{Scribe.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

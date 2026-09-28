@@ -1,0 +1,8 @@
+{
+  "id": "shortsword",
+  "name": "Shortsword",
+  "type": "weapon",
+  "damage": "1d6",
+  "damageType": "piercing",
+  "properties": ["finesse", "light"]
+}
