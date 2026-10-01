@@ -8,7 +8,7 @@ public class ScribeDbContext : DbContext
     public DbSet<Character> Characters { get; set; }
     public DbSet<Token> Tokens { get; set; }
     public DbSet<ChatMessage> ChatMessages { get; set; }
-    public string DbPath { get; set; }
+    public required string DbPath { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -42,7 +42,7 @@ public class ScribeDbContext : DbContext
 public class Session
 {
     public int SessionId { get; set; }
-    public string JoinCode { get; set; }
+    public string? JoinCode { get; set; }
     public int GameMasterId { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -52,8 +52,8 @@ public class Character
 {
     public int CharacterId { get; set; }
     public int SessionId { get; set; }
-    public string OwnerName { get; set; }
-    public string Name { get; set; }
+    public string? OwnerName { get; set; }
+    public string? Name { get; set; }
     public int HitPoints { get; set; }
     public int ArmorClass { get; set; }
     public int Strength { get; set; }
@@ -63,7 +63,7 @@ public class Character
     public int Wisdom { get; set; }
     public int Charisma { get; set; }
     public int ClassId { get; set; }
-    public List<int> InventoryIds { get; set; }
+    public List<int>? InventoryIds { get; set; }
 }
 
 public class Token
@@ -80,8 +80,8 @@ public class ChatMessage
 {
     public int ChatMessageId { get; set; }
     public int SessionId { get; set; }
-    public string SenderName { get; set; }
-    public string Content { get; set; }
+    public string? SenderName { get; set; }
+    public string? Content { get; set; }
     public DateTime TimeStamp { get; set; }
     public bool IsRollResult { get; set; }
 }

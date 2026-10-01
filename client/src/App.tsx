@@ -1,15 +1,16 @@
-import { useState } from 'react'
+import { Routes, Route } from 'react-router'
+import Landing from './pages/Landing'
+import SessionView from './pages/SessionView'
+import SessionCreated from './pages/SessionCreated'
 import './index.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <h1 className = "text-3xl"> Hello World</h1>
-      </div>
-    </>
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/session/:code" element={<SessionView />} />
+      <Route path="/session/:code/created" element={<SessionCreated />} />
+    </Routes>
   )
 }
 
