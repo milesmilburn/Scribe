@@ -1,12 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
 export default function SessionView() {
   const { code } = useParams();
   const navigate = useNavigate();
   const BASE_API = "http://localhost:5255";
+  
+  const [checking, SetChecking] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+      async function validateSession() {
+        try {
+          const res = await fetch(`${BASE_API}/api/sessions/${code}`);
+
+          if (!res.ok) {
+            alert("Session is invalid or does not exist.");
+            navigate("/")
+            return;
+          }
+          SetChecking(false);
+        } catch {
+          alert("Couldn't reach the server.");
+          navigate("/")
+        }
+    }
+    validateSession();
+  }, [code, navigate])
+  
+  
 
   async function handleSessionEnd() {
     setError(null);
@@ -28,7 +51,13 @@ export default function SessionView() {
     }
   }
 
-
+  if(checking) {
+      return (
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <p className="text-slate-600">Validating Session...</p>
+        </div>
+      );
+    }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center px-4 py-12">
