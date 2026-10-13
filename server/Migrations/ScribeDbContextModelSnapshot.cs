@@ -109,6 +109,10 @@ namespace Scribe.Server.Migrations
                     b.Property<int>("GameMasterId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("GmToken")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 

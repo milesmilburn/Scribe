@@ -18,6 +18,7 @@ builder.Services.AddCors(options =>
                       });
 });
 
+builder.Services.AddSingleton<PresenceTracker>();
 
 var app = builder.Build();
 app.UseCors("ClientDev");
@@ -30,13 +31,15 @@ app.MapPost("/api/sessions", async (ScribeDbContext db) =>
     {
         JoinCode = GenerateJoinCode(),
         GameMasterId = 0,
+        GmToken = Guid.NewGuid().ToString("N"), // Using N formats the GUID without hyphens
         IsActive = true,
         CreatedAt = DateTime.UtcNow
     };
 
     db.Sessions.Add(session);
     await db.SaveChangesAsync();
-    return Results.Created($"/api/sessions/{session.JoinCode}", session);
+
+    return Results.Created($"/api/sessions/{session.JoinCode}", new {session.GmToken, session.JoinCode});
 });
 
 app.MapGet("/api/sessions/{code}", async (string code, ScribeDbContext db) =>
@@ -49,9 +52,8 @@ app.MapGet("/api/sessions/{code}", async (string code, ScribeDbContext db) =>
     if (!session.IsActive)
         return Results.Conflict(new {error = "Session is not active."});
 
-    // TODO: Player lists will have to be updated here once implemented.
-
-    return Results.Ok(session);
+    SessionResponse response = new(session.JoinCode, session.IsActive);
+    return Results.Ok(response);
 });
 
 app.MapPost("/api/sessions/{code}/join", async (string code, ScribeDbContext db) =>
@@ -64,9 +66,8 @@ app.MapPost("/api/sessions/{code}/join", async (string code, ScribeDbContext db)
     if (!session.IsActive)
         return Results.Conflict(new {error = "Session is not active."});
 
-    // TODO: Player lists will have to be updated here once implemented.
-
-    return Results.Ok(session);
+    SessionResponse response = new(session.JoinCode, session.IsActive);
+    return Results.Ok(response);
 });
 
 app.MapPost("/api/sessions/{code}/end", async (string code, ScribeDbContext db) =>

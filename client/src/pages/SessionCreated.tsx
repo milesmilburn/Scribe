@@ -2,6 +2,8 @@ import { useParams, useNavigate } from "react-router";
 
 export default function SessionCreated() {
     const { code } = useParams();
+    
+
     const navigate = useNavigate();
     const link = `${window.location.origin}/session/${code}`;
 

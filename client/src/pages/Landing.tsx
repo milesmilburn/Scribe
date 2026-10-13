@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-
-const BASE_API = "http://localhost:5255";
+import {API_BASE} from '../config'
+import { validateDisplayName } from "../config";
+import { useUserStore } from "../stores/useUserStore";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -9,13 +10,16 @@ export default function Landing() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const displayName = useUserStore((s) => s.displayName);
+  const setDisplayName = useUserStore((s) => s.setDisplayName);
+
   async function handleSessionCreate() {
     setError(null);
     setLoading(true);
 
     try {
       // Create new request and get back the created session details in the res variable
-      const res = await fetch(`${BASE_API}/api/sessions`, {method: "POST"});
+      const res = await fetch(`${API_BASE}/api/sessions`, {method: "POST"});
       if (!res.ok) {
         setError("Could not create session.")
         return;
@@ -41,7 +45,7 @@ export default function Landing() {
 
     try {
       const code = joinCode.trim().toUpperCase();
-      const res = await fetch(`${BASE_API}/api/sessions/${code}`);
+      const res = await fetch(`${API_BASE}/api/sessions/${code}`);
 
       if (res.status === 404) {
         setError("Session not found.");
@@ -56,7 +60,7 @@ export default function Landing() {
         return;
       }
 
-      await fetch(`${BASE_API}/sessions/${code}/join`, {method: "POST"});
+      await fetch(`${API_BASE}/sessions/${code}/join`, {method: "POST"});
       navigate(`/session/${code}`);
     } catch {
       setError("Could not reach the server.")
@@ -69,10 +73,21 @@ export default function Landing() {
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4">
       <h1 className="text-4xl font-bold tracking-tight text-slate-900 mb-8">Scribe</h1>
 
+      <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-6 mb-6 w-full max-w-sm space-y-4">
+        <p className="text-md tracking-tight text-slate-900 mb-2">Display Name:</p>
+        <input
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            maxLength={24}
+            placeholder="Example Name"
+            className="flex-1 w-full border border-slate-300 rounded-md px-3 py-2 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500"
+          />
+      </div>
+
       <div className="bg-white border border-slate-200 rounded-lg shadow-sm p-6 w-full max-w-sm space-y-4">
         <button
           onClick={handleSessionCreate}
-          disabled={loading}
+          disabled={!loading && !validateDisplayName(displayName)}
           className="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2 rounded-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           Create Session
@@ -93,7 +108,7 @@ export default function Landing() {
           />
           <button
             onClick={handleSessionJoin}
-            disabled={loading}
+            disabled={!loading && !validateDisplayName(displayName)}
             className="bg-slate-700 hover:bg-slate-800 text-white font-medium px-4 py-2 rounded-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Join

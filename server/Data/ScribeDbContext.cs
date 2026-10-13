@@ -21,7 +21,8 @@ public class ScribeDbContext : DbContext
             .HasConversion(
                 v => JsonSerializer.Serialize(v),
                 v => JsonSerializer.Deserialize<List<int>>(v) ?? new List<int>()
-            );
+            )
+            .IsRequired(); // CHANGED: EF can't infer nullability through a converter, so state it
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
@@ -39,10 +40,13 @@ public class ScribeDbContext : DbContext
     }
 }
 
+public record SessionResponse (string JoinCode, bool IsActive);
+
 public class Session
 {
     public int SessionId { get; set; }
-    public string? JoinCode { get; set; }
+    public string GmToken { get; set; } = "";
+    public string JoinCode { get; set; } = "";
     public int GameMasterId { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -52,8 +56,8 @@ public class Character
 {
     public int CharacterId { get; set; }
     public int SessionId { get; set; }
-    public string? OwnerName { get; set; }
-    public string? Name { get; set; }
+    public string OwnerName { get; set; } = "";
+    public string Name { get; set; } = "";
     public int HitPoints { get; set; }
     public int ArmorClass { get; set; }
     public int Strength { get; set; }
@@ -63,7 +67,7 @@ public class Character
     public int Wisdom { get; set; }
     public int Charisma { get; set; }
     public int ClassId { get; set; }
-    public List<int>? InventoryIds { get; set; }
+    public List<int> InventoryIds { get; set; } = new();
 }
 
 public class Token
@@ -80,8 +84,8 @@ public class ChatMessage
 {
     public int ChatMessageId { get; set; }
     public int SessionId { get; set; }
-    public string? SenderName { get; set; }
-    public string? Content { get; set; }
+    public string SenderName { get; set; } = "";
+    public string Content { get; set; } = "";
     public DateTime TimeStamp { get; set; }
     public bool IsRollResult { get; set; }
 }
