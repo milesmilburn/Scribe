@@ -134,6 +134,14 @@ namespace Scribe.Server.Migrations
                     b.Property<int?>("CharacterId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("MapId")
                         .HasColumnType("INTEGER");
 

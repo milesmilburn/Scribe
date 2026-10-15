@@ -13,6 +13,9 @@ export default function Landing() {
   const displayName = useUserStore((s) => s.displayName);
   const setDisplayName = useUserStore((s) => s.setDisplayName);
 
+  const setGmToken = useUserStore((s) => s.setGmToken);
+
+
   async function handleSessionCreate() {
     setError(null);
     setLoading(true);
@@ -26,6 +29,7 @@ export default function Landing() {
       }
 
       const session = await res.json();
+      setGmToken(session.joinCode, session.gmToken);
       navigate(`/session/${session.joinCode}/created`);
     } catch {
       setError("Could not reach the server.")

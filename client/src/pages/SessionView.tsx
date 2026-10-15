@@ -9,7 +9,9 @@ export default function SessionView() {
   const { code } = useParams();
   const navigate = useNavigate();
   
+  const gmToken = useUserStore((s) => (code ? s.gmTokens[code] : undefined)) ?? null;
   const displayName = useUserStore((s) => s.displayName);
+
   const setPlayers = useSessionStore((s) => s.setPlayers);
   const reset = useSessionStore((s) => s.reset);
   const players = useSessionStore((s) => s.players);
@@ -38,6 +40,8 @@ export default function SessionView() {
     validateSession();
   }, [code, navigate])
   
+
+  // SignalR effect
   useEffect(() => {
     if (checking || !displayName) return;
 
@@ -50,12 +54,12 @@ export default function SessionView() {
 
     // When a player reconnects, the session sees them as out of a group, so re-init
     connection.onreconnected(() => {
-      connection.invoke("JoinSession", code, displayName).catch(console.error);
+      connection.invoke("JoinSession", code, displayName, gmToken).catch(console.error);
     });
 
     // Start SignalR connection
     connection.start()
-      .then(() => connection.invoke("JoinSession", code, displayName))
+      .then(() => connection.invoke("JoinSession", code, displayName, gmToken))
       .catch(err => console.error("SignalR connection failed: ", err));
 
     return () => { 

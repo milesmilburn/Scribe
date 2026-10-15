@@ -75,9 +75,11 @@ public class Token
     public int TokenId { get; set; }
     public int SessionId { get; set; }
     public int? CharacterId { get; set; }
+    public string Label { get; set; } = "";
+    public string Color { get; set; } = ""; // Hex string
     public double X { get; set; }
     public double Y { get; set; }
-    public int MapId { get; set; }
+    public int MapId { get; set; } = 0;
 }
 
 public class ChatMessage

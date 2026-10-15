@@ -25,6 +25,8 @@ app.UseCors("ClientDev");
 app.MapHub<SessionHub>("/hubs/session");
 app.UseHttpsRedirection();
 
+#region SessionEndpoints
+
 app.MapPost("/api/sessions", async (ScribeDbContext db) =>
 {
     Session session = new Session
@@ -75,13 +77,38 @@ app.MapPost("/api/sessions/{code}/end", async (string code, ScribeDbContext db) 
     var session = await db.Sessions.FirstOrDefaultAsync(s => s.JoinCode == code);
 
     if (session is null)
-        return Results.NotFound();
+        return Results.NotFound(new { error = "Session not found."});
 
     session.IsActive = false;
     await db.SaveChangesAsync();
     return Results.NoContent();
 });
 
+#endregion
+
+#region TokenEndpoints
+
+app.MapGet("/api/sessions/{code}/tokens", async (string code, ScribeDbContext db) =>
+{
+    var session = await db.Sessions.FirstOrDefaultAsync(s => s.JoinCode == code);
+
+    if (session is null)
+        return Results.NotFound(new { error = "Session not found."});
+
+    if (!session.IsActive)
+        return Results.Conflict(new {error = "Session is not active."});
+
+    /* 
+        Using AsNoTracking disables EFCore's entity tracking reducing the overhead. 
+        We don't need it because we aren't going to be making any changes to the tokens from here. 
+    */
+    var tokens = await db.Tokens.AsNoTracking().Where(t => t.SessionId == session.SessionId).ToListAsync();
+    return Results.Ok(tokens);
+});
+
+#endregion
+
+#region Helpers
 
 static string GenerateJoinCode()
 {
@@ -89,6 +116,8 @@ static string GenerateJoinCode()
     var rng = Random.Shared;
     return new(Enumerable.Range(0, 6).Select(_ => codeChars[rng.Next(codeChars.Length)]).ToArray());
 }
+
+#endregion
 
 app.Run();
 
