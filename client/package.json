@@ -11,8 +11,9 @@
   },
   "dependencies": {
     "@microsoft/signalr": "^10.0.11",
+    "@pixi/react": "^8.0.5",
     "@tailwindcss/vite": "^4.3.3",
-    "pixi.js": "^8.20.1",
+    "pixi.js": "^8.22.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router": "^8.4.0",
